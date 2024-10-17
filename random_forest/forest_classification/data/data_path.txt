@@ -1,0 +1,3 @@
+Link to Download the .csv file (must be inside data folder)
+
+https://www.kaggle.com/datasets/uciml/forest-cover-type-dataset

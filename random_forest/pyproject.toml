@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "forest-classification"
+version = "0.1.0"
+description = ""
+authors = ["Gabriel Coelho <gabriel.oliveira2426@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pandas = "^2.2.3"
+scikit-learn = "^1.5.2"
+prettytable = "^3.11.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
