@@ -75,7 +75,6 @@ training_time = time.time() - start_time
 y_pred = dt_classifier.predict(X_test)  # Previsão com o conjunto de teste
 
 # Calcular o tempo de treinamento
-training_time = time.time() - start_time
 print(f"✅ Modelo treinado com sucesso em {training_time:.4f} segundos.")
 
 # -----------------------------------
@@ -120,3 +119,44 @@ performance_table.add_row(["Número de Nós", dt_classifier.tree_.node_count])
 performance_table.add_row(["Profundidade da Árvore", dt_classifier.tree_.max_depth])
 
 print(performance_table)  # Exibe informações adicionais do modelo
+
+# -----------------------------------
+# 6. RESULTADOS OBTIDOS
+# -----------------------------------
+print("\n📋--- 6. RESULTADOS OBTIDOS ---📋")
+# Obtendo informações da matriz de confusão e do relatório de classificação
+classes = [str(i) for i in range(1, 8)]  # Ajuste para suas classes
+accuracies = report['accuracy']
+precision_avg = report['weighted avg']['precision']
+recall_avg = report['weighted avg']['recall']
+f1_avg = report['weighted avg']['f1-score']
+
+# Respostas baseadas nos resultados
+print("1. Você consegue construir um modelo que preveja que tipos de árvores crescem em uma área com base nas características circundantes?")
+print(f"   ✅ Sim, o modelo de árvore de decisão foi treinado e testado com uma precisão média de {accuracies:.2f}.")
+
+print("\n2. Quais tipos de árvores são mais comuns no Roosevelt National Forest?")
+predictions_count = pd.Series(y_pred).value_counts().reindex(classes).fillna(0).astype(int)
+common_trees = predictions_count[predictions_count > 0].sort_values(ascending=False)
+if not common_trees.empty:
+    print(f"   ✅ Os tipos de árvores mais comuns (frequência) previstos são:\n{common_trees}")
+else:
+    print("   ✅ Não foram previstas classes de árvores comuns no conjunto de teste.")
+
+print("\n3. Quais tipos de árvores podem crescer em ambientes mais diversos?")
+# Identificando as classes com melhor desempenho
+best_performing_classes = {class_label: metrics for class_label, metrics in report.items() if isinstance(metrics, dict) and metrics['f1-score'] > 0.90}
+if best_performing_classes:
+    diverse_env_trees = ', '.join(best_performing_classes.keys())
+    print(f"   ✅ As classes que apresentam alto desempenho (F1-Score > 0.90) e, portanto, podem crescer em ambientes mais diversos, incluem: {diverse_env_trees}.")
+else:
+    print("   ✅ Não foram encontradas classes que apresentaram alto desempenho em ambientes diversos.")
+
+print("\n4. Existem certos tipos de árvores que são sensíveis a um fator ambiental, como elevação ou tipo de solo?")
+sensitive_classes = {class_label: metrics['precision'] for class_label, metrics in report.items() if isinstance(metrics, dict) and metrics['precision'] > 0.90}
+if sensitive_classes:
+    most_sensitive_class = max(sensitive_classes, key=sensitive_classes.get)
+    sensitivity_precision = sensitive_classes[most_sensitive_class]
+    print(f"   ✅ A classe mais sensível identificada foi a classe {most_sensitive_class} com precisão de {sensitivity_precision:.2f}. Isso sugere que essa classe pode ser afetada por fatores ambientais específicos.")
+else:
+    print("   ✅ Não foram encontradas classes sensíveis a fatores ambientais específicos com precisão acima de 0.90.")
